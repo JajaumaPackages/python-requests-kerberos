@@ -9,14 +9,12 @@
 %endif
 
 Name:           python-%{upstream_name}
-Version:        0.7.0
-Release:        2%{?dist}
+Version:        0.11.0
+Release:        1%{?dist}
 Summary:        A Kerberos authentication handler for python-requests
 License:        MIT
 URL:            https://github.com/requests/requests-kerberos
-Source0:        http://pypi.python.org/packages/source/r/%{upstream_name}/%{upstream_name}-%{version}.tar.gz
-# https://github.com/requests/requests-kerberos/pull/53
-Patch1:         0001-relax-version-in-kerberos-requirement.patch
+Source0:        https://github.com/requests/requests-kerberos/archive/v%{version}.tar.gz
 # https://github.com/requests/requests-kerberos/issues/54
 Patch2:         0002-avoid-handling-the-second-response-twice-fixes-54.patch
 BuildArch:      noarch
@@ -49,8 +47,6 @@ authentication.
 
 %prep
 %setup -q -n %{upstream_name}-%{version}
-rm -r %{module_name}.egg-info
-%patch1 -p1
 %patch2 -p1
 
 %if %{with python3}
@@ -89,6 +85,10 @@ popd
 %endif
 
 %changelog
+* Mon Jan 02 2017 Jajauma's Packages <jajauma@yandex.ru> - 0.11.0-1
+- Update to latest upstream release
+- Drop 0001-relax-version-in-kerberos-requirement.patch
+
 * Thu Jun 11 2015 Dan Callaghan <dcallagh@redhat.com> - 0.7.0-2
 - relaxed version in kerberos module requirement, to work with
   python-kerberos 1.1 (#1215565)

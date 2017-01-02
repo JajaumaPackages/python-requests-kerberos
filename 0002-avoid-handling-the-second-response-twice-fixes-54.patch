@@ -1,0 +1,29 @@
+From 56478343172940a43de7f844852438597ccbaaf2 Mon Sep 17 00:00:00 2001
+From: Dan Callaghan <dcallagh@redhat.com>
+Date: Thu, 11 Jun 2015 16:31:45 +1000
+Subject: [PATCH 2/2] avoid handling the second response twice (fixes #54)
+
+Requests 1.1 will call the same hooks again when the authenticate_user
+method re-sends the request, and so we will end up calling
+handle_response on the same response twice. Performing mutual
+authentication twice on the same response yields a GSSAPI error so we
+need to avoid that.
+---
+ requests_kerberos/kerberos_.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/requests_kerberos/kerberos_.py b/requests_kerberos/kerberos_.py
+index 6484a11..ff41567 100644
+--- a/requests_kerberos/kerberos_.py
++++ b/requests_kerberos/kerberos_.py
+@@ -149,6 +149,7 @@ def authenticate_user(self, response, **kwargs):
+         response.content
+         response.raw.release_conn()
+ 
++        self.deregister(response)
+         _r = response.connection.send(response.request, **kwargs)
+         _r.history.append(response)
+ 
+-- 
+1.9.3
+
